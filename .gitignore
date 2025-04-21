@@ -11,3 +11,7 @@ airflow.cfg
 airflow.db
 *.json
 service_account.json
+include/metabase-data/metabase.db/metabase.db.mv.db
+include/metabase-data/metabase.db/
+*.db
+*.mv.db
