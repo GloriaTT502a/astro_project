@@ -12,6 +12,7 @@ from cosmos.airflow.task_group import DbtTaskGroup
 from cosmos.constants import LoadMode
 from cosmos.config import ProjectConfig, RenderConfig
 
+from airflow.providers.google.cloud.operators.bigquery import BigQueryExecuteQueryOperator 
 
 @dag(
     start_date=datetime(2025, 4, 1), 
@@ -59,6 +60,13 @@ def retail():
 
     #check_load()
 
+    create_country_task = BigQueryExecuteQueryOperator(
+        task_id='create_country_task',
+        gcp_conn_id='gcp',
+        sql='create_country.sql',
+        use_legacy_sql=False,  # Use standard SQL for BigQuery
+    )
+
     transform = DbtTaskGroup(
         group_id='transform',
         project_config=DBT_PROJECT_CONFIG,
@@ -100,6 +108,7 @@ def retail():
         create_retail_dataset, 
         gcs_to_raw, 
         check_load(), 
+        create_country_task, 
         transform, 
         check_transform(), 
         report, 
